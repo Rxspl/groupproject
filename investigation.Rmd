@@ -27,8 +27,8 @@ library(tidyverse)
 # load your data 
 data1 <- read_csv("data/test.csv")
 
-
-
+col_na_percent <- (colSums(is.na(data1)) / nrow(data1)) * 100
+col_na_percent
 ```
 
 
