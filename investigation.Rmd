@@ -16,6 +16,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r load-lib, message = FALSE}
 library(tidyverse)
+library(corrplot)
+library(caret)
 # Add any other libraries here
 
 
@@ -27,8 +29,11 @@ library(tidyverse)
 # load your data 
 data1 <- read_csv("data/train.csv")
 
-col_na_percent <- (colSums(is.na(data1)) / nrow(data1)) * 100
-col_na_percent
+#col_na_percent <- (colSums(is.na(data1)) / nrow(data1)) * 100
+#col_na_percent
+data1 <- data1[,colMeans(is.na(data1))<=0.05]
+
+
 ```
 
 
