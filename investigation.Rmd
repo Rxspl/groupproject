@@ -33,7 +33,6 @@ col_na_percent <- (colSums(is.na(data1)) / nrow(data1)) * 100
 col_na_percent
 data1 <- data1[,colMeans(is.na(data1))<=0.05]
 
-data1 <- data1 %>% mutate_if(is.character, as.factor)
 
 
 
@@ -46,6 +45,10 @@ step_model <- step(full_model, direction = "both", trace = FALSE)
 summary(step_model)
 
 summary(step_model)
+
+data1 <- data1 %>%
+  select(where(~ !is.factor(.x) & !is.character(.x)))
+
 
 ```
 
