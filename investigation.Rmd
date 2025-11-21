@@ -40,12 +40,77 @@ data1 <- data1[,colMeans(is.na(data1))<=0.05]
 
 data1_clean <- data1 %>% drop_na()
 
-full_model <- lm(SalePrice ~ ., data = data1_clean)
+full_model <- lm(log(SalePrice) ~ ., data = data1_clean)
 step_model <- step(full_model, direction = "both", trace = FALSE)
 summary(step_model)
 
+numeric_vars <- data1_clean %>%
+  select(where(is.numeric))
+cor_matrix <- cor(numeric_vars, use = "complete.obs")
 
 
+top3_cor <- cor_matrix %>%
+  as.data.frame.table() %>%  
+  filter(var2 == "SalePrice",
+    Var1 != "SalePrice") %>%  
+  mutate(abs_cor = abs(Freq)) %>%  
+  arrange(desc(abs_cor)) %>% 
+  head(3) %>%
+  select()
+ 
+
+
+print(top3_cor)
+```
+```{r load-data}
+# load your data 
+data1 <- read_csv("data/train.csv")
+
+col_na_percent <- (colSums(is.na(data1)) / nrow(data1)) * 100
+col_na_percent
+data1 <- data1[,colMeans(is.na(data1))<=0.05]
+
+
+
+
+
+
+data1_clean <- data1 %>% drop_na()
+
+
+numeric_vars <- data1_clean %>%
+  select(where(is.numeric))
+cor_matrix <- cor(numeric_vars, use = "complete.obs")
+
+
+top3_cor <- cor_matrix %>%
+  as.data.frame.table() %>%  
+  filter(Var2 == "SalePrice",
+    Var1 != "SalePrice") %>%  
+  mutate(abs_cor = abs(Freq)) %>%  
+  arrange(desc(abs_cor)) %>% 
+  head(3)
+
+
+print(top3_cor)
+
+
+library(ggplot2)
+library(dplyr)
+
+top_vars <- top3_cor
+
+plots <- lapply(top_vars, function(var) {
+  ggplot(data1_clean, aes(x = .data[[var]], y = SalePrice)) +
+    geom_point(alpha = 0.5) + 
+    geom_smooth(method = "lm", se = FALSE, color = "red") +
+    labs(title = paste("SalePrice vs", var),
+         x = var,
+         y = "SalePrice") +
+    theme_minimal()
+})
+
+plots
 ```
 
 
