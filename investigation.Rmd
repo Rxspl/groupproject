@@ -51,7 +51,7 @@ cor_matrix <- cor(numeric_vars, use = "complete.obs")
 
 top3_cor <- cor_matrix %>%
   as.data.frame.table() %>%  
-  filter(var2 == "SalePrice",
+  filter(Var2 == "SalePrice",
     Var1 != "SalePrice") %>%  
   mutate(abs_cor = abs(Freq)) %>%  
   arrange(desc(abs_cor)) %>% 
