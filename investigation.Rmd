@@ -42,7 +42,7 @@ data1_clean <- data1 %>% drop_na()
 
 full_model <- lm(SalePrice ~ ., data = data1_clean)
 step_model <- step(full_model, direction = "both", trace = FALSE)
-summary(step_model)1
+summary(step_model)
 
 
 
