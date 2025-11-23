@@ -56,7 +56,6 @@ top3_cor <- cor_matrix %>%
   mutate(abs_cor = abs(Freq)) %>%  
   arrange(desc(abs_cor)) %>% 
   head(3) %>%
-  select()
  
 
 
