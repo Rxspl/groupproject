@@ -97,7 +97,7 @@ print(top3_cor)
 library(ggplot2)
 library(dplyr)
 
-top_vars <- top3_cor
+top_vars <- as.character(top3_cor$Var1)
 
 plots <- lapply(top_vars, function(var) {
   ggplot(data1_clean, aes(x = .data[[var]], y = SalePrice)) +
