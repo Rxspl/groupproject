@@ -18,6 +18,9 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(corrplot)
 library(caret)
+library(ggplot2)
+library(dplyr)
+library(tidymodels)
 # Add any other libraries here
 
 
@@ -50,9 +53,6 @@ top5_cor <- cor_matrix %>%
 
 print(top5_cor)
 
-library(ggplot2)
-library(dplyr)
-
 
 top_vars <- as.character(top5_cor$Var1)
 
@@ -68,9 +68,6 @@ plots <- lapply(top_vars, function(var) {
 })
 
 plots
-
-
-library(tidymodels)
 
 
 lm_model <- linear_reg() %>%
@@ -107,7 +104,6 @@ house_pred <- predict(house_fit, data_test) %>%
   bind_cols(data_test)
 
 
-
 rmse(house_pred, truth = SalePrice, .pred)
 rsq(house_pred, truth = SalePrice, .pred)
 
@@ -126,6 +122,7 @@ ggplot(house_pred, aes(x = .pred, y = SalePrice)) +
 house_pred <- house_pred %>%
   mutate(residuals = SalePrice - .pred)
 
+
 ggplot(house_pred, aes(sample = residuals)) +
   stat_qq(alpha = 0.5) +
   stat_qq_line(color = "red", linewidth = 1) +
@@ -137,14 +134,11 @@ ggplot(house_pred, aes(sample = residuals)) +
   theme_minimal()
 
 
-
-
 ggplot(house_pred, aes(x = .pred, y = residuals)) +
   geom_point(alpha = 0.5) +
   geom_hline(yintercept = 0, color = "red") +
   theme_minimal() +
   labs(title = "Residuals vs Fitted Values")
-
 
 
 ```
