@@ -122,6 +122,31 @@ ggplot(house_pred, aes(x = .pred, y = SalePrice)) +
   ) +
   theme_minimal()
 
+
+house_pred <- house_pred %>%
+  mutate(residuals = SalePrice - .pred)
+
+ggplot(house_pred, aes(sample = residuals)) +
+  stat_qq(alpha = 0.5) +
+  stat_qq_line(color = "red", linewidth = 1) +
+  labs(
+    title = "QQ Plot of Model Residuals",
+    x = "Theoretical Quantiles",
+    y = "Sample Quantiles"
+  ) +
+  theme_minimal()
+
+
+
+
+ggplot(house_pred, aes(x = .pred, y = residuals)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "red") +
+  theme_minimal() +
+  labs(title = "Residuals vs Fitted Values")
+
+
+
 ```
 
 
