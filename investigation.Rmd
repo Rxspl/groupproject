@@ -24,7 +24,6 @@ library(caret)
 
 ```
 
-
 ```{r load-data}
 # load your data 
 data1 <- read_csv("data/train.csv")
@@ -33,71 +32,30 @@ col_na_percent <- (colSums(is.na(data1)) / nrow(data1)) * 100
 col_na_percent
 data1 <- data1[,colMeans(is.na(data1))<=0.05]
 
-
-
-
-
-
 data1_clean <- data1 %>% drop_na()
-
-full_model <- lm(log(SalePrice) ~ ., data = data1_clean)
-step_model <- step(full_model, direction = "both", trace = FALSE)
-summary(step_model)
 
 numeric_vars <- data1_clean %>%
   select(where(is.numeric))
+
 cor_matrix <- cor(numeric_vars, use = "complete.obs")
 
 
-top3_cor <- cor_matrix %>%
+top5_cor <- cor_matrix %>%
   as.data.frame.table() %>%  
   filter(Var2 == "SalePrice",
-    Var1 != "SalePrice") %>%  
+         Var1 != "SalePrice") %>%  
   mutate(abs_cor = abs(Freq)) %>%  
   arrange(desc(abs_cor)) %>% 
-  head(3) %>%
- 
+  head(5)
 
-
-print(top3_cor)
-```
-```{r load-data}
-# load your data 
-data1 <- read_csv("data/train.csv")
-
-col_na_percent <- (colSums(is.na(data1)) / nrow(data1)) * 100
-col_na_percent
-data1 <- data1[,colMeans(is.na(data1))<=0.05]
-
-
-
-
-
-
-data1_clean <- data1 %>% drop_na()
-
-
-numeric_vars <- data1_clean %>%
-  select(where(is.numeric))
-cor_matrix <- cor(numeric_vars, use = "complete.obs")
-
-
-top3_cor <- cor_matrix %>%
-  as.data.frame.table() %>%  
-  filter(Var2 == "SalePrice",
-    Var1 != "SalePrice") %>%  
-  mutate(abs_cor = abs(Freq)) %>%  
-  arrange(desc(abs_cor)) %>% 
-  head(3)
-
-
-print(top3_cor)
-
+print(top5_cor)
 
 library(ggplot2)
 library(dplyr)
 
-top_vars <- as.character(top3_cor$Var1)
+
+top_vars <- as.character(top5_cor$Var1)
+
 
 plots <- lapply(top_vars, function(var) {
   ggplot(data1_clean, aes(x = .data[[var]], y = SalePrice)) +
@@ -110,6 +68,60 @@ plots <- lapply(top_vars, function(var) {
 })
 
 plots
+
+
+library(tidymodels)
+
+
+lm_model <- linear_reg() %>%
+  set_engine("lm")
+
+
+data_model <- data1_clean %>%
+  select(SalePrice, all_of(top_vars))
+
+
+
+set.seed(28)
+data_split <- initial_split(data_model, prop = 0.8)
+data_train <- training(data_split)
+data_test  <- testing(data_split)
+
+
+house_recipe <- recipe(SalePrice ~ ., data = data_train) %>%
+  step_dummy(all_nominal(), -all_outcomes())
+
+
+house_wflow <- workflow() %>%
+  add_recipe(house_recipe) %>%
+  add_model(lm_model)
+
+
+house_fit <- house_wflow %>% fit(data = data_train)
+
+
+tidy(house_fit)
+
+
+house_pred <- predict(house_fit, data_test) %>%
+  bind_cols(data_test)
+
+
+
+rmse(house_pred, truth = SalePrice, .pred)
+rsq(house_pred, truth = SalePrice, .pred)
+
+
+ggplot(house_pred, aes(x = .pred, y = SalePrice)) +
+  geom_point(alpha = 0.5) +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  labs(
+    title = "Predicted vs Actual SalePrice",
+    x = "Predicted SalePrice",
+    y = "Actual SalePrice"
+  ) +
+  theme_minimal()
+
 ```
 
 
