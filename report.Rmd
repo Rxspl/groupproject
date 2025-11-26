@@ -38,7 +38,9 @@ library(kableExtra)
 
 ## Research Question
 
-Describe your research question here. Include why this question might be of interest. 
+our research is to predict the house price, to find how many factor will influence the house price and which five have the greatest impact on house price and how they will influence the house price.
+
+because when student rent the house they need to check a lot factor, like the position of the house or the type of the house. All this factor may influence the price of the house.
 
 
 
