@@ -1,6 +1,6 @@
 ---
 title: "Predicting House Prices"
-author: "Team name <Danking-team> Junzhe Wang and Yuanchang Zhang"
+author: "Danking-team Junzhe Wang and Yuanchang Zhang"
 institute: "University of Edinburgh"
 date: "`r Sys.Date()`"
 output:

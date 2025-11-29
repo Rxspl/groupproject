@@ -1,6 +1,6 @@
 ---
 title: "Predicting House Prices"
-author: "by Danking: Yuanchang Zhang, Junzhe Wang"
+author: "by Danking-team: Yuanchang Zhang, Junzhe Wang"
 date: "`r Sys.Date()`"
 output: html_document
 ---
