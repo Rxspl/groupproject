@@ -5,6 +5,7 @@ institute: "University of Edinburgh"
 date: "`r Sys.Date()`"
 output:
   xaringan::moon_reader:
+    self_contained: true
     css: xaringan-themer.css
     lib_dir: libs
     nature:
@@ -12,6 +13,7 @@ output:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
+
       
 ---
 
