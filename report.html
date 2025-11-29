@@ -398,177 +398,166 @@ SalePrice in our analysis and will be used in the prediction model.</p>
 <h2>Findings</h2>
 <p>This section presents the main results of our investigation into the
 factors that drive house prices and the performance of the prediction
-model we developed. Our aim was not only to build a model that could
-estimate SalePrice but also to understand how specific housing
-characteristics contribute to price differences. The findings below
-summarise the data preparation, variable exploration, model building,
-evaluation, and overall interpretation of the results.</p>
+model we developed. The goal of this analysis was not only to produce
+predictions of house prices but also to understand which property
+characteristics contribute most strongly to variations in SalePrice. The
+following discussion summarises our data cleaning, variable selection,
+model building, model evaluation, and final interpretation of the
+results.</p>
 <ol style="list-style-type: decimal">
 <li>Data Preparation and Selection of Key Predictors</li>
 </ol>
-<p>After importing the dataset, our first step was to remove variables
-with more than 5% missing values and then drop the remaining incomplete
-rows. This allowed us to work with a clean dataset and ensured that the
-linear regression model would not be biased by missing data.</p>
-<p>To narrow down the most important features, we calculated
-correlations between all numeric predictors and SalePrice. The top five
-variables with the strongest positive relationships with SalePrice
-were:</p>
+<p>The original dataset contained a large number of variables describing
+the characteristics of residential homes in Ames, Iowa. To prepare the
+data for modelling, we first removed variables with more than 5% missing
+values. This step ensured that no predictor included in the model relied
+heavily on imputed or estimated values. After this filtering, we removed
+all remaining rows with any missing values, leaving a complete dataset
+suitable for regression modelling.</p>
+<p>Next, we identified the variables most strongly related to SalePrice.
+To do this, we calculated correlations between SalePrice and all numeric
+variables in the dataset. From this analysis, the five predictors with
+the strongest positive correlations with SalePrice emerged as:</p>
 <p>OverallQual (correlation: 0.7867)</p>
 <p>GrLivArea (correlation: 0.7111)</p>
 <p>GarageCars (correlation: 0.6418)</p>
 <p>GarageArea (correlation: 0.6211)</p>
 <p>1stFlrSF (correlation: 0.6148)</p>
-<p>These correlations show that properties with better construction
-quality, larger living areas, and more garage space tend to command
-significantly higher prices. Importantly, the two highest
-correlations—OverallQual and GrLivArea—are widely recognised in housing
-economics research as some of the most influential predictors of price,
-which reinforces the reliability of our selection.</p>
+<p>These values indicate that houses with better quality ratings, larger
+living spaces, and larger or more functional garages tend to sell for
+significantly higher prices. The strong association between SalePrice
+and both OverallQual and GrLivArea also matches what is frequently
+reported in housing market analyses, reinforcing the validity of our
+variable selection. Together, these five predictors form a reasonable
+and interpretable basis for developing a statistical model.</p>
 <ol start="2" style="list-style-type: decimal">
-<li>Visual Relationship Between Predictors and SalePrice</li>
+<li>Visual Relationships Between Predictors and SalePrice</li>
 </ol>
-<p>To better understand how these variables relate to SalePrice, we
-plotted scatterplots with fitted regression lines. The trends were
-consistent and intuitive. For example:</p>
-<p>OverallQual vs SalePrice showed a steep upward trend, with sale
-prices rising sharply as quality ratings increased. This suggests buyers
-place substantial value on the materials and craftsmanship of a
-home.</p>
-<p>GrLivArea vs SalePrice showed a clear, strong positive linear
-pattern. Larger living spaces almost always sold for more, and the
-relationship was relatively tight compared to other variables.</p>
-<p>GarageCars vs SalePrice also displayed a positive relationship,
-although with more variability, suggesting that while garage capacity
-matters, it may not affect price as directly as overall quality or
-living area.</p>
-<p>These plots also helped confirm that a linear model could be a
-reasonable starting point for prediction.</p>
+<p>To explore the relationships between the selected predictors and
+SalePrice, we created scatterplots with fitted regression lines. These
+visualisations helped us understand whether the correlations identified
+earlier were reflected in the raw data.</p>
+<p>The scatterplot of OverallQual vs SalePrice showed a steep upward
+trend, indicating that higher-quality houses sell for substantially
+more. Although the variable is ordinal rather than continuous, the
+relationship was still clear: each increase in quality rating
+corresponded to a substantial jump in price.</p>
+<p>The plot of GrLivArea vs SalePrice displayed a strong and nearly
+linear relationship, with larger homes consistently commanding higher
+prices. This relationship was one of the most visually convincing
+patterns in our dataset, with relatively little overlap between smaller
+and larger homes.</p>
+<p>The relationship between GarageCars and SalePrice was also positive,
+though with greater variability than the previous two predictors. While
+garage capacity influences value, buyers may differ in how much
+importance they place on garage features, explaining the wider spread in
+the plot.</p>
+<p>Overall, the scatterplots confirmed that a linear modelling approach
+was appropriate for these predictors and provided additional confidence
+in using them to predict SalePrice.</p>
 <ol start="3" style="list-style-type: decimal">
 <li>Building the Linear Regression Model</li>
 </ol>
 <p>Using the five selected predictors, we fitted a linear regression
-model. The model estimated the following coefficients:</p>
+model. The estimated coefficients were:</p>
 <p>OverallQual: +25,293.62</p>
 <p>GrLivArea: +45.02 per square foot</p>
 <p>GarageCars: +13,999.99</p>
 <p>GarageArea: +23.62 per square foot</p>
 <p>1stFlrSF: +32.96 per square foot</p>
-<p>These numbers indicate the expected change in sale price for a
-one-unit increase in each variable, assuming all other variables remain
-the same. Several insights stand out:</p>
-<p>OverallQual has the largest impact, adding more than $25,000 for each
-one-point increase. This highlights how much buyers value overall
-construction quality.</p>
-<p>Living area variables (GrLivArea and 1stFlrSF) contribute steadily to
-price growth. Although their coefficients are smaller than OverallQual,
-they still represent substantial increases given how many square feet
-typical houses contain.</p>
-<p>GarageCars has a much larger coefficient than GarageArea, showing
-that the capacity of the garage is more valuable than its size
-alone.</p>
-<p>GarageArea, although statistically weaker (p ≈ 0.056), remains
-relevant but has a smaller effect than the other predictors.</p>
-<p>Together, these coefficients paint a clear picture: buyers favour
-quality and functional living space, and these factors play a major role
-in determining a home’s value.</p>
+<p>Each coefficient represents the expected change in SalePrice for a
+one-unit increase in that predictor, holding all other variables
+constant. Several important points stand out from these results.</p>
+<p>First, OverallQual has the largest coefficient, indicating that
+quality plays an extremely important role in determining house prices. A
+one-point increase in quality corresponds to an increase of more than
+$25,000 in predicted sale price, demonstrating how strongly buyers value
+high-quality features, materials, and craftsmanship.</p>
+<p>Second, GrLivArea and 1stFlrSF both show meaningful positive effects
+on price, reflecting that buyers place significant importance on living
+space. Although their coefficients are smaller than that of OverallQual,
+houses typically vary by many hundreds of square feet, so these
+variables still have substantial influence on final price.</p>
+<p>Third, GarageCars has a much larger effect than GarageArea,
+highlighting that the functional capacity of a garage matters more than
+its size alone. A garage that fits more vehicles typically reflects
+greater convenience, storage, or general utility.</p>
+<p>Finally, GarageArea, while still positively associated with
+SalePrice, has the smallest coefficient and the weakest statistical
+significance (p ≈ 0.056). This suggests that garage size matters but is
+overshadowed by more influential characteristics such as quality and
+living space.</p>
 <ol start="4" style="list-style-type: decimal">
 <li>Model Evaluation: Accuracy and Predictive Power</li>
 </ol>
-<p>To evaluate how well the model performs, we applied it to the test
-dataset and computed two key metrics:</p>
+<p>To assess how well the model predicts house prices, we applied it to
+a test dataset and computed two key performance metrics:</p>
 <p>RMSE = 36,795.13</p>
 <p>R² = 0.758</p>
-<p>An RMSE of about $37k means our model’s predictions are off by
-roughly this amount on average. Given that house prices in the dataset
-range widely—from less than $100k to more than $500k—this level of error
-is reasonable for a simple linear model.</p>
-<p>The R² value of 0.758 means the model explains about 76% of the
-variation in SalePrice. This is a strong result considering we only used
-five variables, and it suggests that these predictors capture much of
-the underlying price structure in the dataset.</p>
+<p>The RMSE represents the model’s average prediction error. An RMSE of
+approximately $37,000 indicates that, on average, the model’s
+predictions differ from actual sale prices by around this amount. While
+this may seem large, it is reasonable relative to the overall price
+range of the dataset, which spans from below $100,000 to above
+$500,000.</p>
+<p>The R² value of 0.758 shows that the model explains about 75.8% of
+the variation in sale prices. This is a strong result for a model using
+only five predictors. It demonstrates that these variables capture most
+of the essential structure in the data and that the linear model is
+capable of producing meaningful predictions.</p>
 <ol start="5" style="list-style-type: decimal">
 <li>Model Diagnostics: Checking Assumptions</li>
 </ol>
-<p>To ensure the model’s validity, we examined diagnostic plots.</p>
-<ol style="list-style-type: lower-alpha">
-<li>Predicted vs. Actual Plot</li>
-</ol>
-<p>Most predictions lined up closely with the 45-degree line, indicating
-that the model generally predicts prices accurately. However, deviations
-increased for very expensive homes, reflecting that high-end properties
-often have unique features not captured in our model.</p>
-<ol start="2" style="list-style-type: lower-alpha">
-<li>Residuals vs. Fitted</li>
-</ol>
-<p>The plot showed a mild funnel shape, with residuals growing as fitted
-values increased. This suggests heteroscedasticity, meaning the model’s
-error increases with price. While not severe, it indicates that more
-complex models might handle expensive homes better.</p>
-<ol start="3" style="list-style-type: lower-alpha">
-<li>QQ Plot of Residuals</li>
-</ol>
-<p>Residuals mostly followed the straight line, showing approximate
-normality. Slight deviations at the upper tail signal that the model
-underestimates or overestimates the most expensive homes.</p>
-<p>Overall, diagnostic checks support that the linear model’s
-assumptions hold reasonably well for typical houses, although
-performance is weaker in extreme cases.</p>
+<p>To ensure the validity of the model, we examined several diagnostic
+plots.</p>
+<p>The Predicted vs Actual plot showed that the majority of predictions
+fall close to the 45-degree reference line, meaning the model generally
+performs well in estimating sale prices. Deviations from the line were
+more noticeable for very expensive homes, indicating that the model
+tends to struggle with predicting high-price outliers, which often have
+unique features not captured by the predictors.</p>
+<p>The Residuals vs Fitted plot revealed a slight funnel shape, with
+residuals spreading out more as predicted values increased. This
+suggests the presence of heteroscedasticity, meaning the model’s errors
+are larger for more expensive properties. This is common in real estate
+data, as high-value homes tend to vary more in features that are not
+included in simple models.</p>
+<p>The QQ plot of residuals generally followed a straight line,
+indicating that the residuals are approximately normally distributed.
+Slight deviations appeared at the extreme tails, suggesting that the
+model may slightly overestimate or underestimate prices for the most
+expensive houses.</p>
+<p>Overall, the diagnostic plots indicate that the linear model meets
+its assumptions reasonably well and is suitable for interpreting the
+relationships between variables and SalePrice.</p>
 <ol start="6" style="list-style-type: decimal">
 <li>Interpretation of Results</li>
 </ol>
-<p>Combining all findings, it becomes clear that quality and space are
-the primary drivers of housing prices. In particular:</p>
-<p>OverallQual stands out as the single most important factor. This
-underlines that buyers care not just about the size of a home but also
-about the quality of its materials and finishes.</p>
-<p>GrLivArea and 1stFlrSF highlight the importance of usable living
-space. These areas directly influence comfort and functionality, which
-buyers value highly.</p>
-<p>Garage features, especially the number of cars accommodated,
-contribute meaningfully to price but are secondary to quality and living
-space.</p>
-<p>This aligns well with real-world expectations: people will generally
-pay more for spacious, well-built homes with sufficient storage and
-parking.</p>
+<p>The results of this analysis highlight that quality and space are the
+most influential factors in determining house prices. OverallQual
+emerged as the strongest single predictor, emphasising that buyers
+prioritise construction quality and finishing. GrLivArea and 1stFlrSF
+confirmed the importance of living space, reflecting the general
+preference for larger homes with more usable interior area.
+Garage-related variables also contributed meaningfully, especially
+GarageCars, showing that buyers value functional storage and parking
+options.</p>
+<p>These findings align with real-world expectations. Homes that are
+well-constructed, spacious, and practical tend to sell for higher
+prices, which supports the model’s validity and the conclusions drawn
+from the analysis.</p>
 <ol start="7" style="list-style-type: decimal">
-<li>Limitations</li>
-</ol>
-<p>There are several limitations to our approach:</p>
-<p>Only five predictors were used, even though many other variables in
-the dataset may meaningfully influence price (e.g., neighbourhood,
-exterior quality, basement finish).</p>
-<p>Linear models cannot capture complex or nonlinear interactions, such
-as how quality and living area might jointly influence price.</p>
-<p>High-end homes are not well-modelled, likely because they contain
-unique features (e.g., luxury materials, large lots) not represented in
-the selected variables.</p>
-<p>Heteroscedasticity suggests unequal variance, meaning a
-transformation of SalePrice (e.g., log transformation) might improve
-performance.</p>
-<ol start="8" style="list-style-type: decimal">
-<li>Future Work</li>
-</ol>
-<p>Future work could include:</p>
-<p>Adding more predictors to capture location and condition details</p>
-<p>Testing nonlinear models such as random forests or gradient
-boosting</p>
-<p>Using interaction terms or polynomial terms</p>
-<p>Applying log transformation to stabilise variance</p>
-<p>Comparing models based on cross-validation</p>
-<p>These steps could improve both prediction accuracy and
-interpretability.</p>
-<ol start="9" style="list-style-type: decimal">
 <li>Conclusion</li>
 </ol>
-<p>Overall, this project demonstrates that a small set of well-chosen
-variables can explain a large portion of house price variation. The
-linear model performed reasonably well, identifying key drivers such as
-quality, living area, and garage capacity. While the model has
-limitations and could be improved with more sophisticated techniques, it
-provides valuable insights into what makes certain houses more expensive
-than others. This analysis also lays a solid foundation for building
-more advanced predictive models in the future.</p>
+<p>In conclusion, this project demonstrates that a small set of
+carefully selected variables can explain a substantial portion of house
+price variation. The linear regression model performed well, achieving
+an R² of 0.758 and offering clear insights into the factors that most
+strongly influence SalePrice. The results show that overall quality,
+living space, and functional garage capacity play key roles in shaping
+housing values. Although more sophisticated models could potentially
+improve predictive accuracy, the current analysis provides a solid and
+interpretable understanding of what drives house prices.</p>
 </div>
 <div id="references" class="section level2">
 <h2>References</h2>
