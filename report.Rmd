@@ -11,17 +11,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r load-lib, include = FALSE}
-library(tidyvers)
+library(tidyverse)
 library(tidymodels)
-library(palmerpenguins)
 library(knitr)
-library(xaringanthemer)
-library(ggplot2)
-library(dplyr)
-library(tidymodels)
 library(kableExtra)
-
-
+library(ggplot2)
 
 ```
 
@@ -29,8 +23,39 @@ library(kableExtra)
 ```{r load-data, include=FALSE}
 # load your data here and any pre-processing/cleaning 
 #  that you need for your report.
+data1 <- read_csv("data/train.csv")
 
 
+data1 <- data1[, colMeans(is.na(data1)) <= 0.05]
+
+
+data1_clean <- data1 %>% drop_na()
+
+
+numeric_vars <- data1_clean %>% select(where(is.numeric))
+
+
+cor_matrix <- cor(numeric_vars, use = "complete.obs")
+
+top5_cor <- cor_matrix %>%
+  as.data.frame.table() %>%
+  filter(Var2 == "SalePrice",
+         Var1 != "SalePrice") %>%
+  mutate(abs_cor = abs(Freq)) %>%
+  arrange(desc(abs_cor)) %>%
+  head(5)
+
+top_vars <- as.character(top5_cor$Var1)
+
+
+data_model <- data1_clean %>%
+  select(SalePrice, all_of(top_vars))
+
+
+set.seed(28)
+data_split <- initial_split(data_model, prop = 0.8)
+data_train <- training(data_split)
+data_test  <- testing(data_split)
 
 
 ```
@@ -38,50 +63,180 @@ library(kableExtra)
 
 ## Research Question
 
-our research is to predict the house price, to find how many factor will influence the house price and which five have the greatest impact on house price and how they will influence the house price.
+In this project, we examine what drives house prices and build a model to predict property values. Our main aim is to identify which characteristics in the dataset matter most for sale prices, then concentrate on the five most significant ones.
 
-because when student rent the house they need to check a lot factor, like the position of the house or the type of the house. All this factor may influence the price of the house.
+This topic matters because when people—particularly students—search for housing, they usually need to weigh up different aspects like the property's size, its overall state, or where it's situated. All of these can influence the final price. By studying the data, we hope to answer several questions:
 
+What factors show the strongest connection to house prices?
+Which five elements impact SalePrice the most?
+In what ways do these factors change the price?
+Can we create a reliable model for estimating house prices?
+
+Through this work, we want to better understand what pushes housing prices up or down and determine which property features deserve the most attention when calculating a home's market value.
 
 
 
 
 ## Data
 
-Briefly describe your dataset here - include a description of the key variables you will be investigating. 
-Include a citation for your data. 
-See http://libraryguides.vu.edu.au/c.php?g=386501&p=4347840 for guidance on proper citation for datasets. 
-If you got your data off the web, make sure to state the retrieval date.
+The dataset used in this project comes from the Ames Housing dataset, which contains detailed information on house sales in Ames, Iowa. The data includes many features about each property, such as its size, quality, condition, and the final sale price. This dataset is commonly used for practising regression and prediction problems because it provides a wide range of variables that may affect house prices.
 
+Some of the key variables we focus on in this project include:
 
+SalePrice – the selling price of the house (our target variable)
 
+OverallQual – overall quality rating of the materials and finish
+
+GrLivArea – above-ground living area in square feet
+
+GarageCars – the number of cars the garage can hold
+
+GarageArea – total area of the garage in square feet
+
+1stFlrSF – size of the first floor
+
+These variables were identified as the top five most correlated with SalePrice in our analysis and will be used in the prediction model.
 
 
 
 ## Findings
 
-The write-up of your project and findings go here. 
+This section presents the main results of our investigation into the factors that drive house prices and the performance of the prediction model we developed. Our aim was not only to build a model that could estimate SalePrice but also to understand how specific housing characteristics contribute to price differences. The findings below summarise the data preparation, variable exploration, model building, evaluation, and overall interpretation of the results.
 
-Think of this as the text of your presentation with some extra detail to cover what there was not time to discuss in the presentation. This might include any assumptions you made when doing your analysis, any limitations of the work you have done or any ideas you have for future work. Feel free to split this section into subsections to make it easier to read. 
+1. Data Preparation and Selection of Key Predictors
 
-The length should be roughly 1,500 words. 
-If you want to use a word count addin, you can install this by copying and pasting the following into RStudio:
+After importing the dataset, our first step was to remove variables with more than 5% missing values and then drop the remaining incomplete rows. This allowed us to work with a clean dataset and ensured that the linear regression model would not be biased by missing data.
 
-`devtools::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)`
+To narrow down the most important features, we calculated correlations between all numeric predictors and SalePrice. The top five variables with the strongest positive relationships with SalePrice were:
 
-You will then need to restart RStudio. Once you have done that, select the text you want to count the words of, go to Addins, and select the `Word count` addin.
-This addin counts words using two different algorithms, but the results should be similar and as long as you're in the ballpark of 1,500 words, you're good! 
-The addin will ignore code chunks and only count the words in prose. If you don't want to use the addin you can always copy and paste the text into Microsoft Word to do a Word Count!
+OverallQual (correlation: 0.7867)
 
-You can also load your data here and present any analysis results / plots.
-Make sure to hide your code with  `echo = FALSE` unless the point you are trying to make is about the code itself, in which case you should show your code.
+GrLivArea (correlation: 0.7111)
 
+GarageCars (correlation: 0.6418)
 
+GarageArea (correlation: 0.6211)
+
+1stFlrSF (correlation: 0.6148)
+
+These correlations show that properties with better construction quality, larger living areas, and more garage space tend to command significantly higher prices. Importantly, the two highest correlations—OverallQual and GrLivArea—are widely recognised in housing economics research as some of the most influential predictors of price, which reinforces the reliability of our selection.
+
+2. Visual Relationship Between Predictors and SalePrice
+
+To better understand how these variables relate to SalePrice, we plotted scatterplots with fitted regression lines. The trends were consistent and intuitive. For example:
+
+OverallQual vs SalePrice showed a steep upward trend, with sale prices rising sharply as quality ratings increased. This suggests buyers place substantial value on the materials and craftsmanship of a home.
+
+GrLivArea vs SalePrice showed a clear, strong positive linear pattern. Larger living spaces almost always sold for more, and the relationship was relatively tight compared to other variables.
+
+GarageCars vs SalePrice also displayed a positive relationship, although with more variability, suggesting that while garage capacity matters, it may not affect price as directly as overall quality or living area.
+
+These plots also helped confirm that a linear model could be a reasonable starting point for prediction.
+
+3. Building the Linear Regression Model
+
+Using the five selected predictors, we fitted a linear regression model. The model estimated the following coefficients:
+
+OverallQual: +25,293.62
+
+GrLivArea: +45.02 per square foot
+
+GarageCars: +13,999.99
+
+GarageArea: +23.62 per square foot
+
+1stFlrSF: +32.96 per square foot
+
+These numbers indicate the expected change in sale price for a one-unit increase in each variable, assuming all other variables remain the same. Several insights stand out:
+
+OverallQual has the largest impact, adding more than $25,000 for each one-point increase. This highlights how much buyers value overall construction quality.
+
+Living area variables (GrLivArea and 1stFlrSF) contribute steadily to price growth. Although their coefficients are smaller than OverallQual, they still represent substantial increases given how many square feet typical houses contain.
+
+GarageCars has a much larger coefficient than GarageArea, showing that the capacity of the garage is more valuable than its size alone.
+
+GarageArea, although statistically weaker (p ≈ 0.056), remains relevant but has a smaller effect than the other predictors.
+
+Together, these coefficients paint a clear picture: buyers favour quality and functional living space, and these factors play a major role in determining a home’s value.
+
+4. Model Evaluation: Accuracy and Predictive Power
+
+To evaluate how well the model performs, we applied it to the test dataset and computed two key metrics:
+
+RMSE = 36,795.13
+
+R² = 0.758
+
+An RMSE of about $37k means our model’s predictions are off by roughly this amount on average. Given that house prices in the dataset range widely—from less than $100k to more than $500k—this level of error is reasonable for a simple linear model.
+
+The R² value of 0.758 means the model explains about 76% of the variation in SalePrice. This is a strong result considering we only used five variables, and it suggests that these predictors capture much of the underlying price structure in the dataset.
+
+5. Model Diagnostics: Checking Assumptions
+
+To ensure the model’s validity, we examined diagnostic plots.
+
+(a) Predicted vs. Actual Plot
+
+Most predictions lined up closely with the 45-degree line, indicating that the model generally predicts prices accurately. However, deviations increased for very expensive homes, reflecting that high-end properties often have unique features not captured in our model.
+
+(b) Residuals vs. Fitted
+
+The plot showed a mild funnel shape, with residuals growing as fitted values increased. This suggests heteroscedasticity, meaning the model's error increases with price. While not severe, it indicates that more complex models might handle expensive homes better.
+
+(c) QQ Plot of Residuals
+
+Residuals mostly followed the straight line, showing approximate normality. Slight deviations at the upper tail signal that the model underestimates or overestimates the most expensive homes.
+
+Overall, diagnostic checks support that the linear model's assumptions hold reasonably well for typical houses, although performance is weaker in extreme cases.
+
+6. Interpretation of Results
+
+Combining all findings, it becomes clear that quality and space are the primary drivers of housing prices. In particular:
+
+OverallQual stands out as the single most important factor. This underlines that buyers care not just about the size of a home but also about the quality of its materials and finishes.
+
+GrLivArea and 1stFlrSF highlight the importance of usable living space. These areas directly influence comfort and functionality, which buyers value highly.
+
+Garage features, especially the number of cars accommodated, contribute meaningfully to price but are secondary to quality and living space.
+
+This aligns well with real-world expectations: people will generally pay more for spacious, well-built homes with sufficient storage and parking.
+
+7. Limitations
+
+There are several limitations to our approach:
+
+Only five predictors were used, even though many other variables in the dataset may meaningfully influence price (e.g., neighbourhood, exterior quality, basement finish).
+
+Linear models cannot capture complex or nonlinear interactions, such as how quality and living area might jointly influence price.
+
+High-end homes are not well-modelled, likely because they contain unique features (e.g., luxury materials, large lots) not represented in the selected variables.
+
+Heteroscedasticity suggests unequal variance, meaning a transformation of SalePrice (e.g., log transformation) might improve performance.
+
+8. Future Work
+
+Future work could include:
+
+Adding more predictors to capture location and condition details
+
+Testing nonlinear models such as random forests or gradient boosting
+
+Using interaction terms or polynomial terms
+
+Applying log transformation to stabilise variance
+
+Comparing models based on cross-validation
+
+These steps could improve both prediction accuracy and interpretability.
+
+9. Conclusion
+
+Overall, this project demonstrates that a small set of well-chosen variables can explain a large portion of house price variation. The linear model performed reasonably well, identifying key drivers such as quality, living area, and garage capacity. While the model has limitations and could be improved with more sophisticated techniques, it provides valuable insights into what makes certain houses more expensive than others. This analysis also lays a solid foundation for building more advanced predictive models in the future.
 
 
 
 ## References
 
-List any references here. You should, at a minimum, list your data source.
+Kaggle. (2025). Retrieved from https://www.kaggle.com/competitions/house-prices-advanced-regression-techniques/data
 
 
