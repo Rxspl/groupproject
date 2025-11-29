@@ -63,44 +63,6 @@ data_test  <- testing(data_split)
 
 ## Research Question
 
-In this project, we examine what drives house prices and build a model to predict property values. Our main aim is to identify which characteristics in the dataset matter most for sale prices, then concentrate on the five most significant ones.
-
-This topic matters because when people—particularly students—search for housing, they usually need to weigh up different aspects like the property's size, its overall state, or where it's situated. All of these can influence the final price. By studying the data, we hope to answer several questions:
-
-What factors show the strongest connection to house prices?
-Which five elements impact SalePrice the most?
-In what ways do these factors change the price?
-Can we create a reliable model for estimating house prices?
-
-Through this work, we want to better understand what pushes housing prices up or down and determine which property features deserve the most attention when calculating a home's market value.
-
-
-
-
-## Data
-
-The dataset used in this project comes from the Ames Housing dataset, which contains detailed information on house sales in Ames, Iowa. The data includes many features about each property, such as its size, quality, condition, and the final sale price. This dataset is commonly used for practising regression and prediction problems because it provides a wide range of variables that may affect house prices.
-
-Some of the key variables we focus on in this project include:
-
-SalePrice – the selling price of the house (our target variable)
-
-OverallQual – overall quality rating of the materials and finish
-
-GrLivArea – above-ground living area in square feet
-
-GarageCars – the number of cars the garage can hold
-
-GarageArea – total area of the garage in square feet
-
-1stFlrSF – size of the first floor
-
-These variables were identified as the top five most correlated with SalePrice in our analysis and will be used in the prediction model.
-
-
-
-## Findings
-
 This section presents the main results of our investigation into the factors that drive house prices and the performance of the prediction model we developed. The goal of this analysis was not only to produce predictions of house prices but also to understand which property characteristics contribute most strongly to variations in SalePrice. The following discussion summarises our data cleaning, variable selection, model building, model evaluation, and final interpretation of the results.
 
 1. Data Preparation and Selection of Key Predictors
@@ -190,6 +152,7 @@ These findings align with real-world expectations. Homes that are well-construct
 7. Conclusion
 
 In conclusion, this project demonstrates that a small set of carefully selected variables can explain a substantial portion of house price variation. The linear regression model performed well, achieving an R² of 0.758 and offering clear insights into the factors that most strongly influence SalePrice. The results show that overall quality, living space, and functional garage capacity play key roles in shaping housing values. Although more sophisticated models could potentially improve predictive accuracy, the current analysis provides a solid and interpretable understanding of what drives house prices.
+
 
 
 
